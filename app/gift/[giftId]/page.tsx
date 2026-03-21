@@ -13,7 +13,8 @@ interface Gift {
   status: string;
 }
 
-export default function GiftPage({ params }: { params: { giftId: string } }) {
+export default async function GiftPage({ params }: { params: Promise<{ giftId: string }> }) {
+  const { giftId } = await params;
   const [gift, setGift] = useState<Gift | null>(null);
   const [loading, setLoading] = useState(true);
   const [amount, setAmount] = useState("");
@@ -27,7 +28,7 @@ export default function GiftPage({ params }: { params: { giftId: string } }) {
 
   useEffect(() => {
     async function fetchGift() {
-      const q = query(collection(db, "gifts"), where("giftId", "==", params.giftId));
+      const q = query(collection(db, "gifts"), where("giftId", "==", giftId));
       const snapshot = await getDocs(q);
       if (!snapshot.empty) {
         const docData = snapshot.docs[0];
@@ -37,7 +38,7 @@ export default function GiftPage({ params }: { params: { giftId: string } }) {
       setLoading(false);
     }
     fetchGift();
-  }, [params.giftId]);
+  }, [giftId]);
 
   const presetAmounts = ["$5", "$10", "$15", "$20"];
 
@@ -63,7 +64,7 @@ export default function GiftPage({ params }: { params: { giftId: string } }) {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({
-          giftId: params.giftId,
+          giftId: giftId,
           docId,
           amount: finalAmount,
           contributorName: name,
