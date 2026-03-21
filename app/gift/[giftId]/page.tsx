@@ -1,5 +1,5 @@
 "use client";
-import { useEffect, useState } from "react";
+import { useEffect, useState, use } from "react";
 import { db } from "@/lib/firebase";
 import { collection, query, where, getDocs, addDoc, updateDoc, doc, increment } from "firebase/firestore";
 
@@ -13,8 +13,9 @@ interface Gift {
   status: string;
 }
 
-export default async function GiftPage({ params }: { params: Promise<{ giftId: string }> }) {
-  const { giftId } = await params;
+export default function GiftPage({ params }: { params: Promise<{ giftId: string }> }) {
+  const { giftId } = use(params);
+
   const [gift, setGift] = useState<Gift | null>(null);
   const [loading, setLoading] = useState(true);
   const [amount, setAmount] = useState("");
@@ -91,7 +92,7 @@ export default async function GiftPage({ params }: { params: Promise<{ giftId: s
   if (gift.status === "closed" || gift.status === "fulfilled" || isExpired) {
     return (
       <div style={{ padding: 40, maxWidth: 500, margin: "0 auto", textAlign: "center" }}>
-        <h2>This gift pool has closed.</h2>
+       &ldquo;This gift pool has closed.&rdquo;
         <p>Thank you to everyone who contributed!</p>
       </div>
     );
@@ -111,13 +112,7 @@ export default async function GiftPage({ params }: { params: Promise<{ giftId: s
     <div style={{ padding: 40, maxWidth: 500, margin: "0 auto" }}>
       <h1>Group Gift for {gift.recipientName}</h1>
       {gift.babyGender && <p>👶 {gift.babyGender}</p>}
-      {gift.giftNote && <p style={{ fontStyle: "italic" }}>"{gift.giftNote}"</p>}
-      <p>⏰ Pool closes: {new Date(gift.deadline).toLocaleDateString("en-US", { weekday: "long", year: "numeric", month: "long", day: "numeric" })}</p>
-
-      <hr style={{ margin: "24px 0" }} />
-
-      <h3>Choose your contribution:</h3>
-      <div style={{ display: "flex", gap: 10, flexWrap: "wrap", marginBottom: 16 }}>
+      {gift.giftNote && <><p style={{ fontStyle: "italic" }}>&ldquo;{gift.giftNote}&rdquo;</p><p>⏰ Pool closes: {new Date(gift.deadline).toLocaleDateString("en-US", { weekday: "long", year: "numeric", month: "long", day: "numeric" })}</p><hr style={{ margin: "24px 0" }} /><h3>Choose your contribution:</h3><div style={{ display: "flex", gap: 10, flexWrap: "wrap", marginBottom: 16 }}>
         {presetAmounts.map((a) => (
           <button
             key={a}
@@ -149,9 +144,9 @@ export default async function GiftPage({ params }: { params: Promise<{ giftId: s
         >
           Custom
         </button>
-      </div>
+      </div></>
 
-      {amount === "custom" && (
+        }amount === &ldquo;Custom&ldquo;
         <input
           type="number"
           placeholder="Enter amount in USD"
@@ -159,7 +154,7 @@ export default async function GiftPage({ params }: { params: Promise<{ giftId: s
           onChange={(e) => setCustomAmount(e.target.value)}
           style={{ padding: 10, fontSize: 16, width: "100%", marginBottom: 16, boxSizing: "border-box" }}
         />
-      )}
+      )
 
       <input
         type="text"
