@@ -25,6 +25,10 @@ export async function POST(req: NextRequest) {
   const properties: Record<string, string> = {};
  
   const lineItem = order.line_items?.[0];
+  // Only process Group Gift orders
+if (lineItem?.product_id?.toString() !== "9989388534061") {
+  return NextResponse.json({ message: "Not a group gift order, skipping." });
+}
   if (lineItem?.properties) {
     for (const prop of lineItem.properties) {
       properties[prop.name] = prop.value;
