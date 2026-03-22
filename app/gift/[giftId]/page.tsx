@@ -2,7 +2,7 @@
 import { useEffect, useState, use } from "react";
 import { db } from "@/lib/firebase";
 import { collection, query, where, getDocs } from "firebase/firestore";
-import Script from "next/script";
+
 
 interface Gift {
   giftId: string;
@@ -63,6 +63,12 @@ export default function GiftPage({ params }: { params: Promise<{ giftId: string 
     }
     fetchGift();
   }, [giftId]);
+
+  // Load Accept.js
+const script = document.createElement("script");
+script.src = "https://js.authorize.net/v1/Accept.js";
+script.async = false;
+document.body.appendChild(script);
 
   const presetAmounts = ["$18", "$36", "$54", "$100"];
 
@@ -152,7 +158,7 @@ export default function GiftPage({ params }: { params: Promise<{ giftId: string 
 
   if (paid) {
     return (
-      <div style={{ padding: 40, maxWidth: 500, margin: "0 auto", textAlign: "center" }}>
+  <div style={{ padding: 40, maxWidth: 500, margin: "0 auto" }}>
         <h2>Thank you for your contribution!</h2>
         <p>You contributed ${getFinalAmount()} toward a gift for {gift.recipientName}.</p>
         <p>A confirmation has been sent to {email}.</p>
@@ -171,11 +177,7 @@ export default function GiftPage({ params }: { params: Promise<{ giftId: string 
   };
 
   return (
-    <>
-      <Script
-        src="https://js.authorize.net/v1/Accept.js"
-        strategy="beforeInteractive"
-      />
+  
       <div style={{ padding: 40, maxWidth: 500, margin: "0 auto" }}>
         <h1>Group Gift for {gift.recipientName}</h1>
         <p>⏰ This link will expire on: <strong>{new Date(gift.deadline).toLocaleDateString("en-US", { weekday: "long", year: "numeric", month: "long", day: "numeric" })}</strong></p>
@@ -306,6 +308,5 @@ export default function GiftPage({ params }: { params: Promise<{ giftId: string 
           Payments are processed securely. Your card details are never stored.
         </p>
       </div>
-    </>
-  );
+      );
 }
