@@ -23,7 +23,7 @@ export async function POST(req: NextRequest) {
 
   const order = JSON.parse(rawBody);
   const properties: Record<string, string> = {};
-
+ console.log("Properties received:", JSON.stringify(properties));
   const lineItem = order.line_items?.[0];
   if (lineItem?.properties) {
     for (const prop of lineItem.properties) {
