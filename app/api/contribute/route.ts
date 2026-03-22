@@ -3,9 +3,8 @@ import { db } from "@/lib/firebase";
 import { collection, addDoc, updateDoc, doc, increment } from "firebase/firestore";
 import { Resend } from "resend";
 
-
 export async function POST(req: NextRequest) {
-  const { giftId, docId, amount, contributorName, contributorEmail } = await req.json();
+  const { giftId, docId, amount, contributorName, contributorEmail, opaqueData } = await req.json();
 
   try {
     const APIContrId = process.env.AUTHORIZENET_API_LOGIN_ID!;
@@ -16,6 +15,7 @@ export async function POST(req: NextRequest) {
       ? "https://api.authorize.net/xml/v1/request.api"
       : "https://apitest.authorize.net/xml/v1/request.api";
 
+    // First charge the card
     const payload = {
       createTransactionRequest: {
         merchantAuthentication: {
@@ -27,20 +27,37 @@ export async function POST(req: NextRequest) {
           amount: parseFloat(amount).toFixed(2),
           payment: {
             opaqueData: {
-              dataDescriptor: "COMMON.ACCEPT.INAPP.PAYMENT",
-              dataValue: "PLACEHOLDER",
+              dataDescriptor: opaqueData.dataDescriptor,
+              dataValue: opaqueData.dataValue,
             },
           },
         },
       },
     };
 
-    // Record contribution in Firestore
+    const authResponse = await fetch(endpoint, {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify(payload),
+    });
+
+    const authResult = await authResponse.json();
+    console.log("Authorize.net response:", JSON.stringify(authResult));
+
+    const transResult = authResult.transactionResponse;
+
+    if (!transResult || transResult.responseCode !== "1") {
+      const errMsg = transResult?.errors?.[0]?.errorText || "Payment declined.";
+      return NextResponse.json({ error: errMsg }, { status: 400 });
+    }
+
+    // Payment succeeded — now record in Firestore
     const giftRef = doc(db, "gifts", docId);
     await addDoc(collection(db, "gifts", docId, "contributions"), {
       contributorName,
       contributorEmail,
       amount: parseFloat(amount),
+      transactionId: transResult.transId,
       paidAt: new Date().toISOString(),
     });
 
@@ -48,8 +65,9 @@ export async function POST(req: NextRequest) {
       totalCollected: increment(parseFloat(amount)),
       contributorCount: increment(1),
     });
-   const resend = new Resend(process.env.RESEND_API_KEY);
-    // Send confirmation email to contributor
+
+    // Send confirmation email
+    const resend = new Resend(process.env.RESEND_API_KEY);
     await resend.emails.send({
       from: "Baby Boutique Israel <gifts@babyboutiqueisrael.com>",
       to: contributorEmail,
