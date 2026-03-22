@@ -70,7 +70,7 @@ script.src = "https://js.authorize.net/v1/Accept.js";
 script.async = false;
 document.body.appendChild(script);
 
-  const presetAmounts = ["$18", "$36", "$54", "$100"];
+  const presetAmounts = ["$5","$10","$15","$20"]
 
   const getFinalAmount = () => {
     if (amount === "custom") return customAmount;
