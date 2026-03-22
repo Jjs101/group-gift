@@ -23,7 +23,7 @@ export async function POST(req: NextRequest) {
 
   const order = JSON.parse(rawBody);
   const properties: Record<string, string> = {};
- console.log("Raw line item properties:", JSON.stringify(lineItem?.properties));
+ 
   const lineItem = order.line_items?.[0];
   if (lineItem?.properties) {
     for (const prop of lineItem.properties) {
@@ -32,20 +32,18 @@ export async function POST(req: NextRequest) {
   }
 
   const giftId = nanoid(10);
-  const cutoffValue = properties["Cutoff"] || "7";
-  const daysUntilDeadline = parseInt(cutoffValue);
-  const deadline = new Date();
-  deadline.setDate(deadline.getDate() + daysUntilDeadline);
+  const cutoffValue = properties["Cut-off Date - When the link will stop accepting contributions and the gift will be prepared."] || "";
+const deadline = cutoffValue ? new Date(cutoffValue) : new Date(Date.now() + 7 * 24 * 60 * 60 * 1000); 
 
   const gift = {
     giftId,
-    organizerName: properties["Group gift arranger contact"] || "",
-    organizerEmail: properties["Gg email link"] || "",
-    organizerPhone: properties["Gg receiver number"] || "",
-    recipientName: properties["Gift recipient"] || "",
+    organizerName: properties["Your contact number"] || "",
+    organizerEmail: properties["Email where the link should be sent"] || "",
+    organizerPhone: properties["Your contact number"] || "",
+    recipientName: properties["Name of Gift Recipient"] || "",
     babyGender: properties["Gender"] || "",
-    giftNote: properties["Gg gift note"] || "",
-    chooser: properties["Chooser"] || "",
+    giftNote: properties["Gift note (The names of all contributors will be written on the note.)"] || "",
+    chooser: properties["Choose The Gift"] || "",
     deadline: deadline.toISOString(),
     status: "open",
     totalCollected: 0,
