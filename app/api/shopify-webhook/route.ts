@@ -55,9 +55,10 @@ export async function POST(req: NextRequest) {
   };
 
   await addDoc(collection(db, "gifts"), gift);
-
+ console.log("Gift created, sending email to:", gift.organizerEmail);
   const giftUrl = `${process.env.NEXT_PUBLIC_BASE_URL}/gift/${giftId}`;
   const resend = new Resend(process.env.RESEND_API_KEY);
+  console.log("Attempting to send email...");
   await resend.emails.send({
     from: "Baby Boutique Israel <gifts@babyboutiqueisrael.com>",
     to: gift.organizerEmail,
