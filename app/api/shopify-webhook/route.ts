@@ -37,7 +37,7 @@ const deadline = cutoffValue ? new Date(cutoffValue) : new Date(Date.now() + 7 *
 
   const gift = {
     giftId,
-    organizerName: properties["Your contact number"] || "",
+    organizerName: properties["name"],
     organizerEmail: properties["Email where the link should be sent"] || "",
     organizerPhone: properties["Your contact number"] || "",
     recipientName: properties["Name of Gift Recipient"] || "",
