@@ -1,7 +1,7 @@
 "use client";
 import { useEffect, useState, use } from "react";
 import { db } from "@/lib/firebase";
-import { collection, query, where, getDocs, addDoc, updateDoc, doc, increment } from "firebase/firestore";
+import { collection, query, where, getDocs } from "firebase/firestore";
 
 interface Gift {
   giftId: string;
@@ -15,7 +15,6 @@ interface Gift {
 
 export default function GiftPage({ params }: { params: Promise<{ giftId: string }> }) {
   const { giftId } = use(params);
-
   const [gift, setGift] = useState<Gift | null>(null);
   const [loading, setLoading] = useState(true);
   const [amount, setAmount] = useState("");
@@ -41,7 +40,7 @@ export default function GiftPage({ params }: { params: Promise<{ giftId: string 
     fetchGift();
   }, [giftId]);
 
-  const presetAmounts = ["$5", "$10", "$15", "$20"];
+  const presetAmounts = ["$18", "$36", "$54", "$100"];
 
   const getFinalAmount = () => {
     if (amount === "custom") return customAmount;
@@ -52,7 +51,7 @@ export default function GiftPage({ params }: { params: Promise<{ giftId: string 
     setError("");
     const finalAmount = getFinalAmount();
     if (!finalAmount || isNaN(Number(finalAmount)) || Number(finalAmount) <= 0) {
-      setError("Please enter a valid amount.");
+      setError("Please select or enter a valid amount.");
       return;
     }
     if (!name || !email) {
@@ -65,7 +64,7 @@ export default function GiftPage({ params }: { params: Promise<{ giftId: string 
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({
-          giftId: giftId,
+          giftId,
           docId,
           amount: finalAmount,
           contributorName: name,
@@ -92,7 +91,7 @@ export default function GiftPage({ params }: { params: Promise<{ giftId: string 
   if (gift.status === "closed" || gift.status === "fulfilled" || isExpired) {
     return (
       <div style={{ padding: 40, maxWidth: 500, margin: "0 auto", textAlign: "center" }}>
-       &ldquo;This gift pool has closed.&rdquo;
+        <h2>This gift link has expired.</h2>
         <p>Thank you to everyone who contributed!</p>
       </div>
     );
@@ -111,8 +110,12 @@ export default function GiftPage({ params }: { params: Promise<{ giftId: string 
   return (
     <div style={{ padding: 40, maxWidth: 500, margin: "0 auto" }}>
       <h1>Group Gift for {gift.recipientName}</h1>
-      {gift.babyGender && <p>👶 {gift.babyGender}</p>}
-      {gift.giftNote && <><p style={{ fontStyle: "italic" }}>&ldquo;{gift.giftNote}&rdquo;</p><p>⏰ Pool closes: {new Date(gift.deadline).toLocaleDateString("en-US", { weekday: "long", year: "numeric", month: "long", day: "numeric" })}</p><hr style={{ margin: "24px 0" }} /><h3>Choose your contribution:</h3><div style={{ display: "flex", gap: 10, flexWrap: "wrap", marginBottom: 16 }}>
+      <p>⏰ This link will expire on: <strong>{new Date(gift.deadline).toLocaleDateString("en-US", { weekday: "long", year: "numeric", month: "long", day: "numeric" })}</strong></p>
+
+      <hr style={{ margin: "24px 0" }} />
+
+      <h3>Choose your contribution:</h3>
+      <div style={{ display: "flex", gap: 10, flexWrap: "wrap", marginBottom: 16 }}>
         {presetAmounts.map((a) => (
           <button
             key={a}
@@ -144,9 +147,9 @@ export default function GiftPage({ params }: { params: Promise<{ giftId: string 
         >
           Custom
         </button>
-      </div></>
+      </div>
 
-        }amount === &ldquo;Custom&ldquo;
+      {amount === "custom" && (
         <input
           type="number"
           placeholder="Enter amount in USD"
@@ -154,11 +157,11 @@ export default function GiftPage({ params }: { params: Promise<{ giftId: string 
           onChange={(e) => setCustomAmount(e.target.value)}
           style={{ padding: 10, fontSize: 16, width: "100%", marginBottom: 16, boxSizing: "border-box" }}
         />
-      )
+      )}
 
       <input
         type="text"
-        placeholder="Your name"
+        placeholder="Your full name"
         value={name}
         onChange={(e) => setName(e.target.value)}
         style={{ padding: 10, fontSize: 16, width: "100%", marginBottom: 10, boxSizing: "border-box" }}
