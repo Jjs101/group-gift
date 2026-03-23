@@ -48,6 +48,7 @@ const deadline = cutoffValue ? new Date(cutoffValue) : new Date(Date.now() + 7 *
     babyGender: properties["Gender"] || "",
     giftNote: properties["Gift note (The names of all contributors will be written on the note.)"] || "",
     chooser: properties["Choose The Gift"] || "",
+    deliveryAddress: properties["Address for delivery"] || "",
     deadline: deadline.toISOString(),
     status: "open",
     totalCollected: 0,
