@@ -72,6 +72,8 @@ const deadline = cutoffValue ? new Date(cutoffValue) : new Date(Date.now() + 7 *
       <p>Share this link with your group so they can contribute:</p>
       <p><a href="${giftUrl}">${giftUrl}</a></p>
       <p>The pool closes on <strong>${deadline.toLocaleDateString("en-US", { weekday: "long", year: "numeric", month: "long", day: "numeric" })}</strong>.</p>
+      <p>Here is the address you entered for the delivery<p>
+      <tr><td><strong>Delivery Address:</strong></td><td>${gift.deliveryAddress}</td></tr>
       <p>Once the pool closes we will be in touch to arrange the gift.</p>
       <br/>
       <p>Baby Boutique Israel</p>
