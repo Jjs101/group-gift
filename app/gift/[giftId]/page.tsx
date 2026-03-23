@@ -69,7 +69,7 @@ export default function GiftPage({ params }: { params: Promise<{ giftId: string 
     document.body.appendChild(script);
   }, [giftId]);
 
-  const presetAmounts = ["$18", "$36", "$54", "$100"];
+  const presetAmounts = ["$5","$10","$15","$20"];
 
   const getFinalAmount = () => {
     if (amount === "custom") return customAmount;
