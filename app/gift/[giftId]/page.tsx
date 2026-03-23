@@ -227,7 +227,7 @@ export default function GiftPage({ params }: { params: Promise<{ giftId: string 
     return (
       <div style={pageStyle}>
         <div style={headerStyle}>
-          <Image src="/logo.png" alt="Baby Boutique Israel" width={160} height={80} style={{ objectFit: "contain" }} />
+          <Image src="/Logo.png" alt="Baby Boutique Israel" width={160} height={80} style={{ objectFit: "contain" }} />
         </div>
         <div style={{ ...cardStyle, textAlign: "center" }}>
           <div style={{ fontSize: 48, marginBottom: 16 }}>💜</div>
@@ -242,7 +242,7 @@ export default function GiftPage({ params }: { params: Promise<{ giftId: string 
   return (
     <div style={pageStyle}>
       <div style={headerStyle}>
-        <Image src="/logo.png" alt="Baby Boutique Israel" width={160} height={80} style={{ objectFit: "contain" }} />
+        <Image src="/Logo.png" alt="Baby Boutique Israel" width={160} height={80} style={{ objectFit: "contain" }} />
       </div>
 
       <div style={cardStyle}>
